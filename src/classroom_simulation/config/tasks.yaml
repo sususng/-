@@ -1,0 +1,269 @@
+# ============================================================
+# 备课流程Task（Lesson Preparation Tasks）
+# ============================================================
+
+search_resources_task:
+  description: >
+    根据指定的备课内容（课题、课时、年级），从本地知识库搜索相关教学案例。
+    如果本地无匹配案例，则联网搜索补充资源。
+    将搜索结果整理成列表供用户选择参考。
+  expected_output: >
+    包含案例名称、课标要求、教学目标、重难点的搜索结果列表
+  agent: leader_teacher
+
+collaborative_prep_task:
+  description: >
+    与听课教师协同备课，基于参考案例分析：
+    - 提取课标要求
+    - 分析教学目标
+    - 设计教学活动
+    - 补充需要的内容
+  expected_output: >
+    协同备课分析报告，包含课标要求、教学目标、活动设计建议
+  agent: leader_teacher
+
+generate_lesson_plan_task:
+  description: >
+    基于选择的参考案例，生成完整的教案。
+    【重要约束】
+    - 本教案是上课前准备的文档，不包含任何学生反馈信息
+    - 重点、难点、学情分析、教学目标、教材分析、课标要求都用段落格式表述，不用表格
+    - 去除附录内容（问卷、评分量表等）
+    - 教学反思要简洁，不涉及实际课堂学生反应
+    - 只生成1课时的内容
+
+    教案必须包含以下章节：
+    1. 基本信息 2. 课标要求 3. 教材分析 4. 学情分析
+    5. 教学目标（按信息意识、计算思维、数字化学习与创新、信息社会责任四维度）
+    6. 教学重点 7. 教学难点 8. 教学过程（含详细活动设计）
+    9. 课堂小结 10. 学生作业（分层：必做题/选做题）
+    11. 板书设计 12. 教学反思
+  expected_output: >
+    完整的教案.md文件，包含所有12个章节，符合上述约束
+  agent: leader_teacher
+  output_file: output/教案.md
+
+generate_ppt_script_task:
+  description: >
+    根据教案生成PPT脚本，包含每页标题、内容要点、动画建议、互动设计。
+    【重要约束】
+    - 只生成1课时的PPT内容
+    - PPT总页数控制在12-18页之间
+    - PPT总播放时长控制在15-20分钟
+    - 每页需标注预计播放时长（秒）
+    - 包含：封面页、目录页、内容页（知识讲解）、互动页、总结页、作业页
+  expected_output: >
+    PPT脚本.md文件，包含PPT结构、内容、动画和互动设计，标注每页时长
+  agent: leader_teacher
+  output_file: output/PPT脚本.md
+
+generate_resource_list_task:
+  description: >
+    整理教学资源清单，只放教案中实际使用到的资源。
+    【重要约束】
+    - 只包含教案中有使用到的各类资源
+    - 没有使用到的资源一律不放入
+    - 资源类型包括：视频、图片、文档、软件工具、在线链接等
+  expected_output: >
+    教学资源清单.md文件，只包含实际使用的资源
+  agent: leader_teacher
+  output_file: output/教学资源清单.md
+
+generate_speech_script_task:
+  description: >
+    生成教师逐字说课稿，包含教师话语、设计意图说明、预期效果描述。
+    【重要约束】
+    - 教师说话按1分钟150字计算，总时长不能超过15分钟
+    - 说课稿总字数约2500字左右
+    - 只包含教师话语和设计意图，不要包含其他文件内容
+  expected_output: >
+    说课稿.md文件，总字数约2500字，包含教师逐字话语和设计意图
+  agent: leader_teacher
+  output_file: output/说课稿.md
+
+generate_timeline_task:
+  description: >
+    生成精确到秒的40分钟课堂时间线。
+    【重要约束】
+    - 只放置40分钟的课堂时间线
+    - 时间精确到秒
+    - 包含分钟级活动安排和每个环节的时间节点
+    - 不需要其他多余内容
+  expected_output: >
+    课堂时间线.md文件，只有40分钟时间线，时间精确到秒
+  agent: leader_teacher
+  output_file: output/课堂时间线.md
+
+peer_review_task:
+  description: >
+    听课教师从教师视角和学生视角进行协同备课审查。
+    【重要约束】
+    - 只写反馈内容，不重复其他文件的相同内容
+    - 不要包含教学目标、重难点等已经在教案中写过的内容
+    - 只记录听课教师的独立观察和反馈意见
+  expected_output: >
+    听课教师反馈.md文件，只包含反馈内容
+  agent: peer_teacher
+  output_file: output/听课教师反馈.md
+
+academic_audit_task:
+  description: >
+    教导主任对备课文件进行教学专业审核，审核结果保存到log.md。
+    【重要约束】
+    - 不生成独立的审核报告文件
+    - 审核内容以简短文字形式追加到log.md
+    - 审核内容包含：是否通过、发现的问题（如果有）
+
+    审核维度：
+    - 学习目标（核心素养四维度是否覆盖）
+    - 学习内容（知识准确、逻辑清晰）
+    - 教学策略（方法得当、活动有效）
+    - 学习参与（全员参与设计）
+    - 学习反馈（反馈机制）
+    - 技术融合（技术使用合理）
+  expected_output: >
+    将审核结果以简短文字追加到output/log.md
+  agent: academic_director
+
+content_audit_task:
+  description: >
+    教学内容审核官对备课文件进行合规性审核，审核结果保存到log.md。
+    【重要约束】
+    - 不生成独立的审核报告文件
+    - 审核内容以简短文字形式追加到log.md
+    - 审核内容包含：是否通过、发现的问题（如果有）
+
+    审核维度：
+    - 意识形态合规（政治方向、价值导向）
+    - 科学性审查（知识准确、代码无误）
+    - 适龄性与教育性（适合高中生）
+    - 安全与隐私保护（无安全隐患）
+  expected_output: >
+    将审核结果以简短文字追加到output/log.md
+  agent: content_auditor
+
+# ============================================================
+# 课堂模拟流程Task（Class Demo Tasks）
+# ============================================================
+
+read_prep_package_task:
+  description: >
+    从备课包目录读取所有教学文件：
+    - 教案.md（教学过程、活动安排）
+    - PPT脚本.md（教师讲授内容来源）
+    - 说课稿.md（教师逐字讲稿）
+    - 教学资源清单.md（教学活动需要的资源）
+    - 课堂时间线.md（时间轴安排）
+  expected_output: >
+    备课包文件列表和内容摘要
+  agent: leader_teacher
+
+simulate_class_task:
+  description: >
+    按照课堂时间线进行40分钟模拟上课。
+    主教师应用教师主导策略：
+    - 变"学生提问-教师回答"为"教师设问-学生思考-教师追问"
+    - 设计Q1-Q4层次问题链
+    - 对学生回答进行加工性反馈
+    - 巡视指导时增加"认知冲突"类提问
+    三类学生参与模拟：
+    - 学生优（小智）：快速反应，主动提问
+    - 学生中（小程）：按部就班，偶尔卡顿
+    - 学生差（小新）：需要更多帮助，容易出错
+  expected_output: >
+    完整的课堂模拟全程记录，包含师生互动细节
+  agent: leader_teacher
+
+generate_interaction_file_task:
+  description: >
+    根据模拟上课记录生成40分钟课堂模拟互动文件。
+    包含：
+    - 精确到秒的时间轴
+    - 每个环节的开始和结束时间
+    - 教师主导策略应用记录
+    - 三类学生模拟特点
+    - 边缘生关注记录
+  expected_output: >
+    课堂模拟互动.md文件
+  agent: leader_teacher
+  output_file: output/课堂模拟互动.md
+
+student_feedback_task:
+  description: >
+    三类学生分别提出课后反馈：
+    - 学生优：希望增加的挑战内容、想要深入了解的问题
+    - 学生中：卡住的地方、希望老师改变的讲解方式、需要更多练习的内容
+    - 学生差：完全没理解的地方、需要额外帮助的地方、渴望的鼓励
+  expected_output: >
+    三类学生的独立反馈
+  agent: student_advanced
+
+student_feedback_intermediate_task:
+  description: >
+    中等生小程提出课后反馈：
+    - 今天学到的核心知识点
+    - 卡住的地方
+    - 希望老师改变的讲解方式
+    - 需要更多练习的内容
+  expected_output: >
+    中等生反馈
+  agent: student_intermediate
+
+student_feedback_basic_task:
+  description: >
+    后进生小新提出课后反馈：
+    - 今天学到的内容（即使很少也要记录）
+    - 完全没理解的地方
+    - 需要额外帮助的地方
+    - 渴望的鼓励
+  expected_output: >
+    后进生反馈
+  agent: student_basic
+
+peer_observation_task:
+  description: >
+    听课教师全程观察并记录：
+    - 教学事件时间轴
+    - 提问等待时间是否充足（≥3秒）
+    - 指令是否清晰
+    - 师生互动情况
+    - 学生反应和问题
+    使用句式："我观察到…"、"从教学角度看…"、"如果我是学生…"
+  expected_output: >
+    课堂观察报告
+  agent: peer_teacher
+  output_file: output/听课教师观察报告.md
+
+class_academic_audit_task:
+  description: >
+    教导主任审核课堂模拟文件，审核结果追加到log.md。
+    【重要约束】
+    - 不生成独立的审核报告文件
+    - 审核内容以简短文字形式追加到log.md
+
+    审核内容：
+    - 与教案的一致性（教学过程是否按教案执行）
+    - 与PPT脚本的一致性（讲授内容是否来自PPT）
+    - 与说课稿的一致性（话语是否参考说课稿）
+    - 教师主导策略应用情况（问题链、追问、加工性反馈）
+    - 学生模拟情况（三类学生差异化特点）
+    - 边缘生关注记录
+  expected_output: >
+    将审核结果以简短文字追加到output/log.md
+  agent: academic_director
+
+class_content_audit_task:
+  description: >
+    教学内容审核官审核课堂模拟文件，审核结果追加到log.md。
+    【重要约束】
+    - 不生成独立的审核报告文件
+    - 审核内容以简短文字形式追加到log.md
+
+    审核内容：
+    - 课堂中的意识形态合规性
+    - 课堂中的科学性（无错误内容）
+    - 课堂中的适龄性
+    - 课堂中的安全与隐私保护
+  expected_output: >
+    将审核结果以简短文字追加到output/log.md
+  agent: content_auditor

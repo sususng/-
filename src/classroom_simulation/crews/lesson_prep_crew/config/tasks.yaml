@@ -1,0 +1,193 @@
+# ============================================================
+# 备课流程Task配置 - 课题：{topic}，年级：高一，课时：1课时（40分钟）
+# ============================================================
+# 优化点：使用output_file属性替代file_write工具调用
+
+search_resources_task:
+  description: >
+    根据备课内容进行资源搜索。
+    备课信息：
+    - 课题：{topic}
+    - 课时：1课时（40分钟）
+    - 年级：高一
+    
+    请从本地知识库搜索相关教学案例。如果本地无匹配案例，则联网搜索补充资源。
+    将搜索结果整理成列表供后续备课使用。
+  expected_output: >
+    包含案例名称、课标要求、教学目标、重难点的搜索结果列表
+  agent: leader_teacher
+
+generate_resource_list_task:
+  description: >
+    根据搜索到的教学案例，为课题「{topic}」（高一，1课时）整理教学资源清单。
+    
+    【约束清单】
+    1. 必须包含多媒体资源、软件工具、在线资源、学生素材四类
+    2. 使用Markdown表格格式输出
+    
+  expected_output: >
+    一份完整的教学资源清单，包含多媒体资源、软件工具、在线资源、学生素材四类，使用Markdown表格格式
+  agent: leader_teacher
+  output_file: output/{topic}/教学资源清单.md
+  markdown: true
+
+peer_review_resource_list_task:
+  description: >
+    听课教师审核课题「{topic}」的教学资源清单。
+    
+    【审核要点】
+    1. 资源完整性、适用性、可替代性、可行性
+    
+  expected_output: >
+    一份听课教师的资源清单审核报告，指出资源的问题和改进建议
+  agent: peer_teacher
+  output_file: output/{topic}/听课教师_资源清单审核.md
+  markdown: true
+
+generate_lesson_plan_task:
+  description: >
+    基于教学资源清单和搜索到的案例，为课题「{topic}」生成完整的教案。
+    
+    【约束清单】
+    1. 课堂总时长40分钟，各环节时长之和必须等于40分钟
+    2. 必须包含12个章节，每章节用连贯段落表达
+    3. 教学反思精简，不超过150字
+    4. 【重要】教学过程中每个环节必须包含：教师活动、学生活动、教学意图三列
+    
+  expected_output: >
+    一份完整的教案，包含教学目标、重难点、教学过程（12个章节）、教学反思
+    教学过程表格必须包含：教师活动、学生活动、教学意图三列
+  agent: leader_teacher
+  output_file: output/{topic}/教案.md
+  markdown: true
+
+peer_review_lesson_plan_task:
+  description: >
+    听课教师审核课题「{topic}」的教案。
+    
+    【审核要点】
+    1. 教学目标可测性
+    2. 时间分配合理性（总和=40分钟）
+    3. 作业分层、实操策略、板书规范、反思简洁
+    
+  expected_output: >
+    一份听课教师的教案审核报告，指出教案的问题和改进建议
+  agent: peer_teacher
+  output_file: output/{topic}/听课教师_教案审核.md
+  markdown: true
+
+generate_ppt_script_task:
+  description: >
+    根据教案和教学资源清单，为课题「{topic}」生成PPT脚本。
+    
+    【约束清单】
+    1. 每页包含：标题、内容要点(3-5个)、动画建议、互动设计、资源需求
+    2. 页数建议12-18页
+    
+  expected_output: >
+    一份完整的PPT脚本，包含每页的标题、内容要点、动画建议、互动设计、资源需求
+  agent: leader_teacher
+  output_file: output/{topic}/PPT脚本.md
+  markdown: true
+
+peer_review_ppt_script_task:
+  description: >
+    听课教师审核课题「{topic}」的PPT脚本。
+    
+    【审核要点】
+    1. 内容与教案一致
+    2. 页面设计合理、重难点突出
+    3. 动画和互动设计有效
+    
+  expected_output: >
+    一份听课教师的PPT脚本审核报告，指出PPT的问题和改进建议
+  agent: peer_teacher
+  output_file: output/{topic}/听课教师_PPT脚本审核.md
+  markdown: true
+
+generate_speech_script_task:
+  description: >
+    根据教案和PPT脚本，为课题「{topic}」生成教师逐字说课稿。
+    
+    【约束清单】
+    1. 必须包含：说教材、学情、教法、学法、教学过程、板书
+    2. 逐字写出教师话语
+    3. 使用<>标注设计意图
+    
+  expected_output: >
+    一份完整的教师逐字说课稿，包含说教材、学情、教法、学法、教学过程、板书
+  agent: leader_teacher
+  output_file: output/{topic}/说课稿.md
+  markdown: true
+
+peer_review_speech_script_task:
+  description: >
+    听课教师审核课题「{topic}」的说课稿。
+    
+    【审核要点】
+    1. 语言表达清晰、意图说明清楚
+    2. 与教案和PPT脚本一致
+    3. 时间安排合理
+    
+  expected_output: >
+    一份听课教师的说课稿审核报告，指出说课稿的问题和改进建议
+  agent: peer_teacher
+  output_file: output/{topic}/听课教师_说课稿审核.md
+  markdown: true
+
+generate_timeline_task:
+  description: >
+    根据教案、PPT脚本和说课稿，为课题「{topic}」生成课堂时间线。
+    
+    【约束清单】
+    1. 时间必须精确到秒
+    2. 边缘生关注节点≥3个
+    3. 各环节时长总和=40分钟
+    
+  expected_output: >
+    一份完整的课堂时间线，时间精确到秒，边缘生关注节点≥3个
+  agent: leader_teacher
+  output_file: output/{topic}/课堂时间线.md
+  markdown: true
+
+peer_review_timeline_task:
+  description: >
+    听课教师审核课题「{topic}」的课堂时间线。
+    
+    【审核要点】
+    1. 时间分配合理性（与教案一致）
+    2. 内容一致性（与教案、PPT、说课稿一致）
+    3. 边缘生关注≥3个
+    
+  expected_output: >
+    一份听课教师的时间线审核报告，指出时间线的问题和改进建议
+  agent: peer_teacher
+  output_file: output/{topic}/听课教师_时间线审核.md
+  markdown: true
+
+academic_audit_task:
+  description: >
+    教导主任对课题「{topic}」的全部备课文件进行教学专业审核。
+    
+    【审核要点】
+    1. 六维度：学习目标、学习内容、教学策略、学习参与、学习反馈、技术融合
+    2. 文件审核：教案、PPT、资源清单、说课稿、时间线
+    
+  expected_output: >
+    一份教导主任的教学专业审核报告，评估六维度并给出改进建议
+  agent: academic_director
+  output_file: output/{topic}/教导主任审核报告.md
+  markdown: true
+
+content_audit_task:
+  description: >
+    教学内容审核官对课题「{topic}」的全部备课文件进行合规性审核。
+    
+    【审核要点】
+    1. 四大维度：意识形态、科学性、适龄性、安全隐私
+    
+  expected_output: >
+    一份内容审核官的合规性审核报告，评估四大维度并给出改进建议
+  agent: content_auditor
+  output_file: output/{topic}/内容审核官审核报告.md
+  markdown: true

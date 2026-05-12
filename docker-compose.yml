@@ -1,0 +1,63 @@
+# 课堂模拟CrewAI Docker Compose配置
+# 使用方法：
+# 1. 确保已安装Docker Desktop
+# 2. 配置.env文件（填入API密钥）
+# 3. 运行：docker-compose up -d
+
+version: '3.8'
+
+services:
+  # 主服务：课堂模拟系统
+  classroom_simulation:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: classroom_simulation
+    image: classroom_simulation:latest
+    restart: unless-stopped
+    volumes:
+      # 挂载配置目录（只读模式保护API密钥）
+      - ./.env:/app/.env:ro
+      # 挂载输出目录（保存备课结果）
+      - ./output:/app/output
+      # 挂载知识库目录
+      - ./knowledge:/app/knowledge
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PROJECT_NAME=classroom_simulation
+    networks:
+      - classroom_network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import crewai"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # 可选：Jupyter Notebook用于调试和开发
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: classroom_jupyter
+    image: classroom_simulation:latest
+    restart: unless-stopped
+    command: jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root --NotebookApp.token='' --NotebookApp.password=''
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./.env:/app/.env:ro
+      - ./output:/app/output
+      - ./knowledge:/app/knowledge
+      - ./notebooks:/app/notebooks
+    environment:
+      - PYTHONUNBUFFERED=1
+      - JUPYTER_TOKEN=classroom2024
+    networks:
+      - classroom_network
+    profiles:
+      - debug
+
+networks:
+  classroom_network:
+    driver: bridge
