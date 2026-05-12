@@ -166,9 +166,9 @@ classroom_simulation/
 - **听课教师** (temperature=0.8) - 协同备课和观察
 - **教导主任** (temperature=0.5) - 教学审核
 - **内容审核官** (temperature=0.3) - 合规性审核
-- **学生优** (temperature=0.9) - 学优生模拟
-- **学生中** (temperature=0.7) - 中等生模拟
-- **学生差** (temperature=0.9) - 后进生模拟
+- **学优生** (temperature=0.9) - 学优生模拟
+- **中等生** (temperature=0.7) - 中等生模拟
+- **后进生** (temperature=0.9) - 后进生模拟
 
 ## 📚 文档
 
